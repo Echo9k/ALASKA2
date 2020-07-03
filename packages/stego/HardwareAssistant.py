@@ -17,11 +17,11 @@ class DetectHardware:
         self.replicas = self.strategy.num_replicas_in_sync
 
     @staticmethod
-    # def gpu_info():
-    #     gpu_info = !nvidia - smi
-    #     gpu_info = '\n'.join(gpu_info)
-    #     if gpu_info.find('failed') >= 0: return None
-    #     else: return gpu_info
+    def gpu_info():
+        gpu_info = !nvidia - smi
+        gpu_info = '\n'.join(gpu_info)
+        if gpu_info.find('failed') >= 0: return None
+        else: return gpu_info
 
     @staticmethod
     def tpu_info():
