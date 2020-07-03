@@ -4,29 +4,12 @@ from typing import Dict, Tuple, Optional, List, Generator
 import matplotlib.pyplot as plt
 
 from PIL import Image
-from tensorflow import image, keras, split, truediv, subtract, reduce_min, reduce_max
+from tensorflow import image, keras, split, concat
 
 
-def yuv_img_compare(batch: Generator, sample_size: int = 5):
-
-    yuv_images, _ = next(batch)
-    yuv_images = yuv_images[:sample_size]
-    last_dimension_axis = 3
-    yuv_tensor_images = truediv(
-        subtract(
-            yuv_images,
-            reduce_min(yuv_images)
-        ),
-        subtract(
-            reduce_max(yuv_images),
-            reduce_min(yuv_images)
-        )
-    )
-    y, u, v = split(yuv_tensor_images, 3, axis=last_dimension_axis)
-    target_uv_min, target_uv_max = -0.5, 0.5
-    u = u * (target_uv_max - target_uv_min) + target_uv_min
-    v = v * (target_uv_max - target_uv_min) + target_uv_min
-    return y, u, v
+def luma_channel(rgb_image):
+    yuv_img = image.rgb_to_yuv(rgb_image)
+    return split(yuv_img, 3, 3)[0]  # Luma channel, Label
 
 
 class GetData:
@@ -68,6 +51,12 @@ class GetData:
         """
         Downloads data from the dir_url of the form {category, url}.
         Stores each folder under input_directory/subdirectory/category/
+
+        PARAMETERS:
+        :param get_all: [default=True] Will automatically start downloading all the files in the values of
+         "self.dir_url" to store them in folders with the keys of that directory.
+
+        :return:
         """
 
         def mk_params(dir_key, file_url):
@@ -90,7 +79,8 @@ class GetData:
                   target_size: Optional[Tuple] = (256, 256),
                   subset: Optional[str] = 'training',
                   validation_split: Optional[int] = 0.3,
-                  class_mode: Optional[int] = 'categorical') -> keras.preprocessing.image.DirectoryIterator:
+                  class_mode: Optional[int] = 'categorical',
+                  preprocessing_function=luma_channel) -> keras.preprocessing.image.DirectoryIterator:
         """
         :int batch_size: size of the batches of data (default: 32)
         :tuple target_size: size of the output images.
@@ -113,7 +103,7 @@ class GetData:
                           'horizontal_flip': True,
                           'vertical_flip': True,
                           'validation_split': validation_split,
-                          'preprocessing_function': image.rgb_to_yuv
+                          'preprocessing_function': preprocessing_function
                           }
         img_gen = keras.preprocessing.image.ImageDataGenerator(**img_gen_params)
 
