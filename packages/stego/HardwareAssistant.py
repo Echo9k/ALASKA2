@@ -5,12 +5,14 @@ from tensorflow.config import experimental_connect_to_cluster
 from tensorflow.tpu.experimental import initialize_tpu_system
 from tensorflow.config import list_physical_devices
 from tensorflow.python.client import device_lib
+
+
 # from tensorflow_core.python.distribute.strategy_combinations import tpu_strategy
 
 
 # Hardware information
-def info():
-    print(device_lib.list_local_devices())
+def info(params=None):
+    return device_lib.list_local_devices(params)
 
 
 def gpu_info():
@@ -24,6 +26,7 @@ def tpu_info(params=None):
     In  Kaggle the TPU_Name environment variable is set.
     """
     try:
+        # self.tpu = TPUClusterResolver(tpu='grpc://' + os.environ['COLAB_TPU_ADDR'])
         return TPUClusterResolver(params)
     except ValueError:
         return None
@@ -55,11 +58,14 @@ class Rig:
         else:
             return MirroredStrategy()
 
+    def tpu_strategy(self):
+        experimental_connect_to_cluster(self.tpu)
+        initialize_tpu_system(self.tpu)
+        return TPUStrategy(self.tpu)
+
     def adaptive_strategy(self):
         if self.tpu:
-            experimental_connect_to_cluster(self.tpu)
-            initialize_tpu_system(self.tpu)
-            return TPUStrategy(self.tpu)
+            return self.tpu_strategy()
         else:
             return self.gpu_strategy()
 
@@ -69,7 +75,6 @@ class Rig:
             print(f'GPU {self.gpu}')
         elif self.tpu:
             print(f'Running on TPU {self.tpu.master()}',
-                  f'\nreplicas: {self.replicas}',
-                  f'\ntpu: {self.tpu}')
+                  f'\nreplicas: {self.replicas}')
         else:
             print("No accelerator found")
