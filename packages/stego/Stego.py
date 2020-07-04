@@ -35,15 +35,16 @@ class Stego:
         [dir_url.pop(i) for i in duplicate_folders]
         return dir_url
 
-    def deduce_class_names(self):
+    def _deduce_class_names(self):
         img_directory = self.img_directory
         if self.class_names is None:
+            directories: List[str]
             _, directories, _ = next(walk(img_directory))
             self.class_names = (None, directories)[len(directories) > 0]
 
     def compare_img(self, size=5):
         """ Comparing images from the different classes."""
-        self.deduce_class_names()
+        self._deduce_class_names()
 
         images_folder = self.img_directory + '/'
         _, _, img_names = next(walk(images_folder + self.class_names[0]))

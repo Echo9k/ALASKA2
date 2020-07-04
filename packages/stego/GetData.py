@@ -1,4 +1,3 @@
-from typing import Generator
 import tensorflow as tf
 from typing import Tuple, Optional, Generator, Dict, List
 
@@ -22,12 +21,13 @@ def augment(image, label):
 
 
 class GetData(Stego):
-    def __init__(self, dir_url: Dict[str, str] = None, class_names: [List] = None,
-                 input_directory: str = '/content',
+    def __init__(self, dir_url: Dict[str, str] = None, class_names: [List] = None, input_directory: str = '/content',
                  subdirectory: str = '/stego_images'):
+        super().__init__(dir_url, class_names, input_directory, subdirectory)
         self.dir_url = dir_url
         self.class_names = class_names
         self.img_directory = input_directory + subdirectory
+
     def download_unzip(self, get_all=True) -> None or Generator:
         """
         Downloads data from the dir_url of the form {category, url}.
@@ -88,7 +88,7 @@ class GetData(Stego):
                           }
         img_gen = tf.keras.preprocessing.image.ImageDataGenerator(**img_gen_params)
 
-        self.deduce_class_names()
+        self._deduce_class_names()
 
         img_dir_params = {'directory': self.img_directory,
                           'image_data_generator': img_gen,
