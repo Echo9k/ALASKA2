@@ -2,5 +2,12 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Stego2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/package/stego-pack" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/packages/stego" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/packages/stego/stegoPack" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/stego" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/stego-pack" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/stego_ORIGINAL" vcs="Git" />
   </component>
 </project>
